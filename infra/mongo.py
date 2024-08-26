@@ -170,10 +170,3 @@ class MongoRepository:
         :rtype: Query
         """
         return Query(self._database, collection, verbose=verbose)
-
-    def update_many(self, collection: str, filters: list[Tuple], data: dict) -> int:
-        query_obj = Query(self._database, collection)
-        collection_obj: Collection = self._database[collection]
-        new_filters = query_obj.parse_filters(filters)
-        result: UpdateResult = collection_obj.update_many(new_filters, {"$set": data})
-        return result.modified_count

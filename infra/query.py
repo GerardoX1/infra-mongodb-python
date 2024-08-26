@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Any, List, Optional, Tuple, TypeVar, Union
 
 from pymongo import ASCENDING, DESCENDING
-from pymongo.collection import Collection
+from pymongo.collection import Collection, Cursor
 from pymongo.database import Database
 
 DatabaseT = TypeVar("DatabaseT", bound="Database")
@@ -13,7 +13,6 @@ CollectionT = TypeVar("CollectionT", bound="Collection")
 QueryT = TypeVar("QueryT", bound="Query")
 
 
-# TODO check docstrings @all
 class Query:
     """
     A client-side representation of a MongoDB Query.
@@ -260,3 +259,39 @@ class Query:
         :rtype: Cursor
         """
         return self.__collection.distinct(key, self._get_filter())
+
+    def paginate(
+        self,
+        page: int,
+        limit: int,
+        *,
+        sort: Optional[List[Tuple[str, int]]] = None,
+        projection: Union[list, dict] = None,
+    ) -> Tuple[Optional[Cursor], int]:
+        """
+        Gets all resources that correspond with the filters' list split into chunks/pages.
+
+        :param page: Page's number
+        :type page: int
+        :param limit: The maximum number of results to return
+        :type limit: int
+        :param sort: A list of (key, direction) pairs specifying the sort order for this query
+        :type sort: List[Tuple[str, Union[ASCENDING, DESCENDING]]]
+        :param projection: List of fields that should be returned in te result
+        :type projection: Union[list, dict]
+        :return: The retrieved resources if found
+        :rtype: Cursor
+        """
+        if page <= 0:
+            logging.warning("Page number must be greater than 0, Setting page to 1")
+            page = 1
+        skip = (page - 1) * limit
+
+        result = self.__collection.find(
+            self._get_filter(),
+            sort=sort,
+            skip=skip,
+            limit=limit,
+            projection=projection,
+        )
+        return result
