@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Any, List, Optional, Tuple, TypeVar, Union
 
 from pymongo import ASCENDING, DESCENDING
-from pymongo.collection import Collection,
+from pymongo.collection import Collection
 from pymongo.database import Database
 
 DatabaseT = TypeVar("DatabaseT", bound="Database")
