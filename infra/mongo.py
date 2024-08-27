@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import getenv
-from typing import Any, Optional, Tuple
+from typing import Any, Optional
 from urllib.parse import urlencode
 
 from pymongo import MongoClient
@@ -21,6 +21,7 @@ class MongoRepository:
     _client: MongoClient = None
     _database: Database = None
     _connection_options: dict = {
+        "authSource": "admin",
         "readPreference": "secondaryPreferred",
         "retryWrites": "true",
         "w": "majority",
